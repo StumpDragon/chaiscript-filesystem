@@ -1,0 +1,14 @@
+println_string("hello world"); 
+println_string( helloWorld("Chris") );
+
+
+print(1); 
+
+print(100);
+
+var v = [[[15]]]
+
+print(v[0][0][0] == 15)
+
+
+
