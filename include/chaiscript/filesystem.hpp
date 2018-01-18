@@ -9,6 +9,7 @@ namespace fs = boost::filesystem;
 using boost::system::error_code;
 
 #include <vector>
+#include <iostream>
 
 // Create the module here. 
 //
@@ -17,17 +18,18 @@ namespace chaiscript {
 
 
 class canonicalized_path : public fs::path {
-    fs::path p_; 
+    fs::path canonicalize(const fs::path& p) {
+        error_code ec;
+        auto retP = fs::canonical(p, ec); 
 
-    void canonicalize(const fs::path& p) { 
-        error_code ec; 
-        p_ = canonical(p, ec);
+        std::cout << "error_code: " << ec.value() << std::endl;
+        return retP;
     }
 
 public:
-	canonicalized_path(const fs::path& p) : fs::path(p) { }
-    canonicalized_path(const std::string& p) { canonicalize( fs::path(p)) ; }
-    canonicalized_path(const char* p) { canonicalize(fs::path(p)); }
+	canonicalized_path(const fs::path& p)    : fs::path(canonicalize(p)) { }
+    canonicalized_path(const std::string& p) : fs::path(canonicalize(fs::path(p))) { }
+    canonicalized_path(const char* p)        : fs::path(canonicalize(fs::path(p))) { }
 };
 
 
@@ -56,7 +58,7 @@ protected:
         if (dir.filename() == ".")
             dir.remove_filename();
         // We're also not interested in the file's name.
-        assert(file.has_filename());
+        //assert(file.has_filename());
         file.remove_filename();
 
         // If dir has more components than file, then file can't possibly
