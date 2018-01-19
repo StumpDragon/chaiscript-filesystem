@@ -17,12 +17,14 @@ namespace chaiscript {
     namespace filesystem { 
 
 
+/*
 class canonicalized_path : public fs::path {
     fs::path canonicalize(const fs::path& p) {
         error_code ec;
         auto retP = fs::canonical(p, ec); 
 
-        std::cout << "error_code: " << ec.value() << std::endl;
+        std::cout << "error_code: " << ec.value() << " " << ec.category().name() << " " << ec.message() << std::endl;
+        std::cout << "canonical: " << retP << std::endl;
         return retP;
     }
 
@@ -31,20 +33,28 @@ public:
     canonicalized_path(const std::string& p) : fs::path(canonicalize(fs::path(p))) { }
     canonicalized_path(const char* p)        : fs::path(canonicalize(fs::path(p))) { }
 };
+*/
 
 
 
 class fs_sandbox { 
-	std::vector<canonicalized_path> sandbox_paths; 
+	std::vector<fs::path> sandbox_paths; 
 
 public:
 	fs_sandbox() { }
-	error_code add_path(const canonicalized_path& p) {
-        sandbox_paths.push_back(p);
+	error_code add_path(const fs::path& p) {
+        error_code ec;
+        /* use canonical here vs lexically_normal, we want to store the canonical path,
+           and because it's a sandbox, it *SHOULD* probably already exist.
+         */
+        auto cp = fs::canonical(p, ec); 
+        if ( ENOENT != ec.value()) { 
+            sandbox_paths.push_back(cp);
+        }
+        return ec;
 	} 
 	bool isAllowed(const fs::path& p) {
-        error_code ec;
-        auto cp = fs::canonical(p, ec);
+        auto cp = p.lexically_normal();
         for ( auto& sp: sandbox_paths ) { 
         	if (isContainedBy(sp, cp))  return true;
         }

@@ -19,6 +19,15 @@ TEST_CASE("Create Filesystem Model", "[core-fs-tests]") {
     fsbox.add_path(cwd / "/tmp/user123/sandbox");
 
 
+    SECTION("Test adding root directory" ) { 
+        auto ec = fsbox.add_path("/"); 
+        REQUIRE( 0 == ec.value() );
+    }
+    SECTION("Testing sandbox - adding a bad directory") {
+        auto ec = fsbox.add_path("/f572d396fae9206628714fb2ce00f72e94f2258f"); 
+        REQUIRE( ENOENT == ec.value() );
+    }
+
     SECTION("Testing childpath /etc/passwd") { 
     	REQUIRE(false == fsbox.isAllowed("/etc/passwd") );
     }
