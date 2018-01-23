@@ -1,8 +1,8 @@
 //#include <chai/filesystem/sandbox.hpp> 
 
 #include <chaiscript/chaiscript.hpp>
+#include <chaiscript/utility/utility.hpp>
 //#include <chaiscript/chaiscript_basic.hpp>
-//#include <chaiscript/utility/utility.hpp>
 
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
@@ -60,6 +60,20 @@ public:
         }
         return false;
 	}
+    bool exists(const fs::path& p ) {
+        error_code ec; 
+        return fs::exists(p, ec); 
+    }
+    bool exists_str(const std::string& p ) { 
+        return exists(fs::path(p));
+    }
+    const std::string current_path() const {
+        error_code ec;
+        auto p = fs::current_path(ec);
+        std::string s = p.string();
+        std::cout << "Current Path: " << s << std::endl;
+        return s;
+    }
 protected:
 	bool isContainedBy(fs::path& dir, fs::path& file) {
 		/* Care of
@@ -87,10 +101,19 @@ protected:
 
 
 class fs_module : public chaiscript::Module {
-	// Need a place to hold the sandbox paths? 
+    fs_sandbox  sandbox;
 
 public: 
     fs_module() : chaiscript::Module() { 
+        chaiscript::utility::add_class<fs_sandbox>(*this, "chai_fs", 
+            {
+                chaiscript::constructor<fs_sandbox()>()/*,
+                chaiscript::constructor<fs_sandbox(const fs_sandbox&)>()*/
+            }, 
+            {
+                { chaiscript::fun(&fs_sandbox::current_path), "current_path" },
+                { chaiscript::fun(&fs_sandbox::exists_str), "exists" },
+            });
     }
 };
 

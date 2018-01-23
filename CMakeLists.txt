@@ -34,10 +34,12 @@ INCLUDE_DIRECTORIES(
 SET(TEST_SRCS
        	tests/chai.cpp 
        	tests/filesystem.cpp
+       	tests/filesystem_module.cpp
    ) 
 
 if(MINGW OR CYGWIN) 
     set_property(SOURCE tests/chai.cpp APPEND PROPERTY COMPILE_FLAGS "-O3" ) 
+    set_property(SOURCE tests/filesystem_module.cpp APPEND PROPERTY COMPILE_FLAGS "-O3" ) 
     #set_property(SOURCE tests/chai.cpp APPEND PROPERTY COMPILE_FLAGS "-Wa,-mbig-obj" ) 
 
   #add_definitions(-O3)

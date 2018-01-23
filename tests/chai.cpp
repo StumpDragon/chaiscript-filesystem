@@ -22,6 +22,9 @@ public:
 	int value() { 
 		return 101; 
 	}
+	std::string returnString(const std::string& r) { 
+		return r; 
+	}
 	
 
 };
@@ -36,6 +39,7 @@ public:
 			{ 
 			   { chaiscript::fun(&Test::test), "test" },
 			   { chaiscript::fun(&Test::value), "value" },
+			   { chaiscript::fun(&Test::returnString), "returnString" },
 			}
 		);
 	}
@@ -72,4 +76,11 @@ TEST_CASE( "testing Test Module", "[eval-tests]" ) {
 
    int i = chai.eval<int>("var t = Test(); t.value();");
    REQUIRE(i == 101);
+}
+
+TEST_CASE( "Testing string method", "[eval-tests]" ) { 
+	ChaiEngine chai; 
+
+	std::string r = chai.eval<std::string>("var t = Test(); t.returnString(\"asdf\");");
+	REQUIRE(r.length() == 4 );
 }
