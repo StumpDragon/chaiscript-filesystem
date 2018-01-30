@@ -1,3 +1,6 @@
+#include <string>
+#include <vector>
+#include <regex>
 //#include <chai/filesystem/sandbox.hpp> 
 
 #include <chaiscript/chaiscript.hpp>
@@ -5,10 +8,14 @@
 //#include <chaiscript/chaiscript_basic.hpp>
 
 #include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-using boost::system::error_code;
 
-#include <vector>
+namespace fs = boost::filesystem;
+namespace c  = chaiscript;
+using boost::system::error_code;
+using std::string;
+using std::vector;
+
+// TODO: Temporary for debugging
 #include <iostream>
 
 // Create the module here. 
@@ -36,9 +43,8 @@ public:
 */
 
 
-
 class fs_sandbox { 
-	std::vector<fs::path> sandbox_paths; 
+	vector<fs::path> sandbox_paths; 
 
 public:
 	fs_sandbox() { }
@@ -53,36 +59,31 @@ public:
         }
         return ec;
 	} 
-	bool isAllowed(const fs::path& p) {
+	bool isAllowed(const fs::path& p) const {
         auto cp = p.lexically_normal();
         for ( auto& sp: sandbox_paths ) { 
+            //std::cout << "sboxpath: " << sp.string() << " input: " << cp.string() << std::endl;
         	if (isContainedBy(sp, cp))  return true;
         }
         return false;
 	}
-    bool exists(const fs::path& p ) {
+    /*bool exists(const fs::path& p ) const  {
+        if ( ! isAllowed(p) ) return false;
         error_code ec; 
         return fs::exists(p, ec); 
-    }
-    bool exists_str(const std::string& p ) { 
-        return exists(fs::path(p));
-    }
-    const std::string current_path() const {
-        error_code ec;
-        auto p = fs::current_path(ec);
-        std::string s = p.string();
-        std::cout << "Current Path: " << s << std::endl;
-        return s;
-    }
+    }*/
+
 protected:
-	bool isContainedBy(fs::path& dir, fs::path& file) {
+	bool isContainedBy(const fs::path& dirParent, const fs::path& filePath) const {
 		/* Care of
 		 * https://stackoverflow.com/a/15549954
 		 */
+        fs::path dir(dirParent);
         if (dir.filename() == ".")
             dir.remove_filename();
         // We're also not interested in the file's name.
         //assert(file.has_filename());
+        fs::path file(filePath);
         file.remove_filename();
 
         // If dir has more components than file, then file can't possibly
@@ -99,22 +100,75 @@ protected:
 
 };
 
+class fs_file { 
+    fs::path path_; 
+public:
+    fs_file(const string& path) : path_(path) {
 
-class fs_module : public chaiscript::Module {
-    fs_sandbox  sandbox;
+    }
+};
+
+class fs_module {
+    fs_sandbox  sandbox_;
+    ChaiScript& chai_;
 
 public: 
-    fs_module() : chaiscript::Module() { 
-        chaiscript::utility::add_class<fs_sandbox>(*this, "chai_fs", 
+    fs_module(ChaiScript& cs) : chai_(cs) 
+    { 
+        chai_.register_namespace([&,this](Namespace& fsName) {
+                auto fs = *this;
+                fsName["exists"]       = var(fun([&,fs](const string& s) { return fs.exists(s); }));
+                fsName["current_path"] = var(fun([&,fs]() { return fs.current_path(); }));
+                fsName["is_directory"] = var(fun([&,fs](const string& s) { return fs.is_directory(s); }));
+                fsName["create_directories"] = var(fun([fs](const string& s) { return fs.create_directories(s); }));
+            },
+            "chaifs");
+
+        /*chaiscript::utility::add_class<fs_sandbox>(*this, "chai_fs", 
             {
                 chaiscript::constructor<fs_sandbox()>()/*,
-                chaiscript::constructor<fs_sandbox(const fs_sandbox&)>()*/
+                chaiscript::constructor<fs_sandbox(const fs_sandbox&)>()
             }, 
             {
-                { chaiscript::fun(&fs_sandbox::current_path), "current_path" },
-                { chaiscript::fun(&fs_sandbox::exists_str), "exists" },
+                { chaiscript::fun(&fs_module::current_path), "current_path" },
+                { chaiscript::fun(&fs_module::exists), "exists" },
             });
+        */
     }
+    fs_sandbox& sandbox() { return sandbox_; };
+
+    static fs::path normalize(const string& p) { 
+        string s = p;
+        std::replace(s.begin(), s.end(), '\\', '/');
+        return fs::path(s);
+    }
+
+
+    bool exists(const string& p ) const { 
+        //std::cout << "Testing exists() " << p << std::endl;
+        if ( ! sandbox_.isAllowed(p) ) return false;
+        error_code ec; 
+        return fs::exists(p, ec); 
+        //return sandbox_.exists(fs::path(p));
+    }
+    bool is_directory(const string& p ) const { 
+        if ( ! sandbox_.isAllowed(p) ) return false;
+        error_code ec; 
+        return fs::is_directory(p, ec); 
+    }
+    const string current_path() const {
+        // TODO: Do we need to sandbox this?  If not an allowed path should we report sbox[0]?
+        error_code ec;
+        auto p = fs::current_path(ec);
+        string s = p.string();
+        //std::cout << "Current Path: " << s << std::endl;
+        return s;
+    }
+    bool create_directories(const string& paths) const { 
+        if ( ! sandbox_.isAllowed(paths) ) return false;
+        return fs::create_directories( fs::path(paths) );
+    }
+
 };
 
 

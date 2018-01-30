@@ -68,7 +68,6 @@ TEST_CASE( "testing basic chai file", "[file-tests]" ) {
   ChaiEngine chai;
 
   chai.eval_file("test.chai"); 
-
 }
 
 TEST_CASE( "testing Test Module", "[eval-tests]" ) {
@@ -84,3 +83,6 @@ TEST_CASE( "Testing string method", "[eval-tests]" ) {
 	std::string r = chai.eval<std::string>("var t = Test(); t.returnString(\"asdf\");");
 	REQUIRE(r.length() == 4 );
 }
+
+
+

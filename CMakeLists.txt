@@ -33,7 +33,7 @@ INCLUDE_DIRECTORIES(
 
 SET(TEST_SRCS
        	tests/chai.cpp 
-       	tests/filesystem.cpp
+       	tests/filesystem_sandbox.cpp
        	tests/filesystem_module.cpp
    ) 
 
