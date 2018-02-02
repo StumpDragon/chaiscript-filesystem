@@ -45,7 +45,7 @@ TEST_CASE("Testing Chaiscript Filesystem Module", "[chaiscript-filesystem]") {
         std::string script = R"(import("chaifs"); chaifs.is_directory("$PATH");)";
         //script = std::regex_replace(script, std::regex(R"(\$PATH)"), p.string());
         script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );
-        //std::cout << "Script: " << script << std::endl;
+        std::cout << "Script: " << script << std::endl;
         bool b = chai.eval<bool>( script );
         REQUIRE( false == b );
     }
@@ -54,6 +54,7 @@ TEST_CASE("Testing Chaiscript Filesystem Module", "[chaiscript-filesystem]") {
         fs::path p("/tmpASDFASDFASDFASDF");
         std::string script = R"(import("chaifs"); chaifs.create_directories("$PATH");)"; 
         script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
+        std::cout << "Script: " << script << std::endl;
         bool b = chai.eval<bool>(script);
         REQUIRE( true == b );
     }
@@ -62,6 +63,7 @@ TEST_CASE("Testing Chaiscript Filesystem Module", "[chaiscript-filesystem]") {
         fs::path p = cwd / "tmp/sandbox1/a/b/c/d"; 
         std::string script = R"(import("chaifs"); chaifs.create_directories("$PATH");)"; 
         script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
+        std::cout << "Script: " << script << std::endl;
         bool b = chai.eval<bool>(script);
         REQUIRE( true == b );
     }
