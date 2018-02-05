@@ -87,7 +87,7 @@ script:
     --config ${CONFIG}
     --verbose
     --clear
-    --install
+    #--install
     --test
 
 before_install:
