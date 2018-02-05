@@ -49,7 +49,7 @@ if(CMAKE_COMPILER_IS_GNUXX)
     ADD_DEFINITIONS(-lstdc++fs)
 endif()
 
-ADD_DEFINITIONS(-std=c++14)
+#ADD_DEFINITIONS(-std=c++14)
 ADD_EXECUTABLE(chai ${TEST_SRCS}) 
 target_link_libraries(chai Catch::Catch Boost::system Boost::filesystem)
 
