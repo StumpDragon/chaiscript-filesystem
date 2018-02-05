@@ -57,13 +57,19 @@ TEST_CASE("Empty sandbox", "[core-sbox-tests]") {
     }
 
 }
-TEST_CASE("Root sandbox - wide open", "[core-sbox-tests]") { 
+TEST_CASE("Sandbox - no path entries", "[core-sbox-tests]") { 
     cfs::fs_sandbox fsbox; 
 
-    SECTION("Testing root directory") { 
-        REQUIRE(true == fsbox.isAllowed("/") ); 
+    SECTION("Testing root directory - no paths should deny all") { 
+        REQUIRE(false == fsbox.isAllowed("/") ); 
     }
-    
+}
+
+TEST_CASE("Root sandbox", "[core-sbox-tests]") {
+    cfs::fs_sandbox fsbox( "/" );
+    SECTION("Testing root directory - should allow root directory") { 
+        REQUIRE(false == fsbox.isAllowed("/") ); 
+    }
 }
 
 

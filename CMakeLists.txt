@@ -52,3 +52,8 @@ endif()
 ADD_DEFINITIONS(-std=c++14)
 ADD_EXECUTABLE(chai ${TEST_SRCS}) 
 target_link_libraries(chai Catch::Catch Boost::system Boost::filesystem)
+
+
+enable_testing()
+
+add_test(chai-test1 chai)

@@ -56,18 +56,44 @@ TEST_CASE("Testing Chaiscript Filesystem Module", "[chaiscript-filesystem]") {
         script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
         std::cout << "Script: " << script << std::endl;
         bool b = chai.eval<bool>(script);
-        REQUIRE( true == b );
+        REQUIRE( false == b );
     }
     SECTION("Test creating a valid set of directories") { 
         fs::path cwd = fs::current_path();
+        fs.sandbox().add_path(cwd / "tmp");
         fs::path p = cwd / "tmp/sandbox1/a/b/c/d"; 
         std::string script = R"(import("chaifs"); chaifs.create_directories("$PATH");)"; 
         script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
         std::cout << "Script: " << script << std::endl;
         bool b = chai.eval<bool>(script);
         REQUIRE( true == b );
+        REQUIRE( true == fs::is_directory(p) );
     }
 
+}
+
+TEST_CASE("fs_file operations", "[chaiscript-filesystem]") { 
+    chaiscript::ChaiScript chai; 
+    cfs::fs_module fs(chai);
+
+    fs::path tmpdir = fs::current_path();
+    tmpdir / "/tmp";
+    fs.sandbox().add_path(tmpdir);
+
+    SECTION("Test open file - not present") {
+        fs::path p = tmpdir / "test-open.txt";
+        std::string script = R"(import("chaifs"); var f = chaifs.open("$PATH"); f.is_valid();)"; 
+            script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
+        bool b = chai.eval<bool>(script);
+        REQUIRE(false == b);
+    }
+    SECTION("Test open file - create" ) { 
+        fs::path p = tmpdir / "test-create.txt";
+        std::string script = R"(import("chaifs"); var f = chaifs.create("$PATH"); f.is_valid();)"; 
+        script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
+        bool b = chai.eval<bool>(script);
+        REQUIRE(true == b);
+    }
 }
 
 /*TEST_CASE("Get current path", "[chaiscript-filesystem]") { 

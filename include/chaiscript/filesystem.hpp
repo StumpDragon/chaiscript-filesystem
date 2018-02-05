@@ -48,6 +48,12 @@ class fs_sandbox {
 
 public:
 	fs_sandbox() { }
+    fs_sandbox(string p) { 
+        /*for ( auto p : paths ) { 
+            sandbox_paths.push_back( fs::path(p) );
+        }*/
+        sandbox_paths.push_back( fs::path(p) );
+    }
 	error_code add_path(const fs::path& p) {
         error_code ec;
         /* use canonical here vs lexically_normal, we want to store the canonical path,
@@ -63,7 +69,10 @@ public:
         auto cp = p.lexically_normal();
         for ( auto& sp: sandbox_paths ) { 
             //std::cout << "sboxpath: " << sp.string() << " input: " << cp.string() << std::endl;
-        	if (isContainedBy(sp, cp))  return true;
+        	if (isContainedBy(sp, cp))  { 
+                //std::cout << "\tis Contained == true" << std::endl;
+                return true;
+            }
         }
         return false;
 	}
@@ -104,38 +113,52 @@ class fs_file {
     fs::path path_; 
 public:
     fs_file(const string& path) : path_(path) {
-
+    }
+    bool is_valid() { 
+        return false;
+    }
+    string readline() { 
+        return "";
+    }
+    long writeline(const string& s) {
+        return(0L);
+    }
+    bool eof() {
+        return true;
     }
 };
 
 class fs_module {
     fs_sandbox  sandbox_;
     ChaiScript& chai_;
+    chaiscript::ModulePtr module_;
 
 public: 
-    fs_module(ChaiScript& cs) : chai_(cs) 
-    { 
+    fs_sandbox& sandbox() { return sandbox_; };
+
+    fs_module(ChaiScript& cs) : chai_(cs), module_(new chaiscript::Module()) { 
         chai_.register_namespace([&,this](Namespace& fsName) {
                 auto fs = *this;
                 fsName["exists"]       = var(fun([&,fs](const string& s) { return fs.exists(s); }));
                 fsName["current_path"] = var(fun([&,fs]() { return fs.current_path(); }));
                 fsName["is_directory"] = var(fun([&,fs](const string& s) { return fs.is_directory(s); }));
                 fsName["create_directories"] = var(fun([fs](const string& s) { return fs.create_directories(s); }));
+                fsName["open"]         = var(fun([fs](const string& s) { return fs.open(s); }));
+                fsName["create"]         = var(fun([fs](const string& s) { return fs.open(s); }));
             },
             "chaifs");
 
-        /*chaiscript::utility::add_class<fs_sandbox>(*this, "chai_fs", 
+        chaiscript::utility::add_class<fs_sandbox>(*module_, "fs_file", 
             {
-                chaiscript::constructor<fs_sandbox()>()/*,
-                chaiscript::constructor<fs_sandbox(const fs_sandbox&)>()
-            }, 
+                chaiscript::constructor<fs_file(const string& p)>()
+                //chaiscript::constructor<fs_sandbox(const fs_sandbox&)>(), 
+            },
             {
-                { chaiscript::fun(&fs_module::current_path), "current_path" },
-                { chaiscript::fun(&fs_module::exists), "exists" },
+                { chaiscript::fun(&fs_file::is_valid), "is_valid" },
+                { chaiscript::fun(&fs_file::eof), "eof" },
             });
-        */
+        chai_.add( module_ );
     }
-    fs_sandbox& sandbox() { return sandbox_; };
 
     static fs::path normalize(const string& p) { 
         string s = p;
@@ -165,10 +188,28 @@ public:
         return s;
     }
     bool create_directories(const string& paths) const { 
+        fs::path p(paths);
         if ( ! sandbox_.isAllowed(paths) ) return false;
-        return fs::create_directories( fs::path(paths) );
+        error_code ec;
+        fs::create_directories( p, ec );
+        bool ret = fs::is_directory( p );
+        /*std::cout << "creating directories: " << paths << " result: " << ret 
+                  << " ec: " << ec.value() << std::endl;
+        */
+        return ret;
     }
+    fs_file open(const string &p) const { 
+        fs_file f(p);
+        //std::cout << "fs_file : single arg func " << std::endl;
 
+        return f;
+    }
+    fs_file create(const string &p) const { 
+        fs_file f(p);
+        //std::cout << "fs_file : create "  << std::endl;
+
+        return f;
+    }
 };
 
 
