@@ -1,6 +1,6 @@
 # Workaround for https://github.com/travis-ci/travis-ci/issues/8363
-language:
-  - minimal
+language: cpp
+#  - minimal
 
 os:
   - linux
@@ -15,6 +15,7 @@ sudo:
 addons:
   apt:
     packages:
+      - python3
       - cmake
 #      - enchant # for documentation
 
@@ -24,6 +25,7 @@ addons:
 env:
   - HUNTER_STATUS_DEBUG=ON
   - CMAKE_VERBOSE_MAKEFILE=ON
+  - CONFIG=Release
 
 matrix:
   include:
@@ -72,11 +74,20 @@ install:
   - export PATH="${POLLY_ROOT}/bin:${PATH}"
 
 script:
-  - > 
-    cmake -H. 
-          -B_builds/${TOOLCHAIN}
-          -DCMAKE_TOOLCHAIN_FILE=${POLLY_ROOT}/${TOOLCHAIN}.cmake 
-          -DCMAKE_VERBOSE_MAKEFILE=ON
+#  - > 
+#    cmake -H. 
+#          -B_builds/${TOOLCHAIN}
+#          -DCMAKE_TOOLCHAIN_FILE=${POLLY_ROOT}/${TOOLCHAIN}.cmake 
+#          -DCMAKE_VERBOSE_MAKEFILE=ON
+  - >
+    python3 "${POLLY_ROOT}/bin/build.py"
+    --home .
+    --toolchain ${TOOLCHAIN}
+    --config ${CONFIG}
+    --verbose
+    --clear
+    --install
+    --test
 
 before_install:
     - eval "${MATRIX_EVAL}"
