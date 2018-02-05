@@ -23,9 +23,10 @@ addons:
 #  - trusty
 
 env:
-  - HUNTER_STATUS_DEBUG=ON
-  - CMAKE_VERBOSE_MAKEFILE=ON
-  - CONFIG=Release
+  global: 
+    - HUNTER_STATUS_DEBUG=ON
+    - CMAKE_VERBOSE_MAKEFILE=ON
+    - CONFIG=Release
 
 matrix:
   include:
@@ -41,25 +42,25 @@ matrix:
           - TOOLCHAIN=gcc-5-cxx14-c11
 
     # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6
-      env:
+    #- os: linux
+    #  addons:
+    #    apt:
+    #      sources:
+    #        - ubuntu-toolchain-r-test
+    #      packages:
+    #        - g++-6
+    #  env:
           #- MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
     # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7
-      env:
+    #- os: linux
+    #  addons:
+    #    apt:
+    #      sources:
+    #        - ubuntu-toolchain-r-test
+    #      packages:
+    #        - g++-7
+    #  env:
           #- MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
 
