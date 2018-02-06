@@ -59,9 +59,10 @@ TEST_CASE("Testing Chaiscript Filesystem Module", "[chaiscript-filesystem]") {
         REQUIRE( false == b );
     }
     SECTION("Test creating a valid set of directories") { 
-        fs::path cwd = fs::current_path();
-        fs.sandbox().add_path(cwd / "tmp");
-        fs::path p = cwd / "tmp/sandbox1/a/b/c/d"; 
+        fs::path tmp = fs::current_path();
+        tmp / "tmp";
+        fs.sandbox().add_path(tmp);
+        fs::path p = tmp / "sandbox1/a/b/c/d"; 
         std::string script = R"(import("chaifs"); chaifs.create_directories("$PATH");)"; 
         script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
         std::cout << "Script: " << script << std::endl;

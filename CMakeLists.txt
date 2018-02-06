@@ -56,4 +56,7 @@ target_link_libraries(chai Catch::Catch Boost::system Boost::filesystem)
 
 enable_testing()
 
+file(GLOB CHAI_SOURCES "tests/*.chai" )
+file(COPY ${CHAI_SOURCES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
+
 add_test(chai-test1 chai)

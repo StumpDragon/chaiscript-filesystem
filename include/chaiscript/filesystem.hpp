@@ -115,6 +115,7 @@ public:
     fs_file(const string& path) : path_(path) {
     }
     bool is_valid() { 
+        std::cout << "fs_file::is_valid p:  " << path_.string() << std::endl;
         return false;
     }
     string readline() { 
@@ -193,9 +194,8 @@ public:
         error_code ec;
         fs::create_directories( p, ec );
         bool ret = fs::is_directory( p );
-        /*std::cout << "creating directories: " << paths << " result: " << ret 
+        std::cout << "creating directories: " << paths << " result: " << ret 
                   << " ec: " << ec.value() << std::endl;
-        */
         return ret;
     }
     fs_file open(const string &p) const { 
