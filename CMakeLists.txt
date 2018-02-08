@@ -31,15 +31,16 @@ INCLUDE_DIRECTORIES(
    ) 
 
 
-SET(TEST_SRCS
-       	tests/chai.cpp 
-       	tests/filesystem_sandbox.cpp
-       	tests/filesystem_module.cpp
-   ) 
+#SET(TEST_SRCS
+#       	tests/chai.cpp 
+#       	tests/filesystem_sandbox.cpp
+#       	tests/filesystem_module.cpp
+#   ) 
 
 if(MINGW OR CYGWIN) 
     set_property(SOURCE tests/chai.cpp APPEND PROPERTY COMPILE_FLAGS "-O3" ) 
     set_property(SOURCE tests/filesystem_module.cpp APPEND PROPERTY COMPILE_FLAGS "-O3" ) 
+    set_property(SOURCE tests/filesystem_sandbox.cpp APPEND PROPERTY COMPILE_FLAGS "-O3" ) 
     #set_property(SOURCE tests/chai.cpp APPEND PROPERTY COMPILE_FLAGS "-Wa,-mbig-obj" ) 
 
   #add_definitions(-O3)
@@ -50,8 +51,12 @@ if(CMAKE_COMPILER_IS_GNUXX)
 endif()
 
 #ADD_DEFINITIONS(-std=c++14)
-ADD_EXECUTABLE(chai ${TEST_SRCS}) 
+ADD_EXECUTABLE(chai tests/chai.cpp) 
+ADD_EXECUTABLE(chai-sbox tests/filesystem_sandbox.cpp) 
+ADD_EXECUTABLE(chai-module tests/filesystem_module.cpp) 
 target_link_libraries(chai Catch::Catch Boost::system Boost::filesystem)
+target_link_libraries(chai-sbox Catch::Catch Boost::system Boost::filesystem)
+target_link_libraries(chai-module Catch::Catch Boost::system Boost::filesystem)
 
 
 enable_testing()
@@ -59,4 +64,12 @@ enable_testing()
 file(GLOB CHAI_SOURCES "tests/*.chai" )
 file(COPY ${CHAI_SOURCES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_test(chai-test1 chai)
+add_test(NAME chai
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+         COMMAND chai  )
+add_test(NAME chai-sbox 
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+         COMMAND chai-sbox  )
+add_test(NAME chai-module 
+         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+         COMMAND chai-module  )

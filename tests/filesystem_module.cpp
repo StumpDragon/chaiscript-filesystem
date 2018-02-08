@@ -1,7 +1,10 @@
 #include <string>
 #include <regex>
 #include <chaiscript/filesystem.hpp> 
-#include <catch.hpp> 
+
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
 
 using std::string;
 namespace cfs = chaiscript::filesystem;
@@ -60,7 +63,7 @@ TEST_CASE("Testing Chaiscript Filesystem Module", "[chaiscript-filesystem]") {
     }
     SECTION("Test creating a valid set of directories") { 
         fs::path tmp = fs::current_path();
-        tmp / "tmp";
+        tmp = tmp / "tmp";
         fs.sandbox().add_path(tmp);
         fs::path p = tmp / "sandbox1/a/b/c/d"; 
         std::string script = R"(import("chaifs"); chaifs.create_directories("$PATH");)"; 
@@ -78,7 +81,7 @@ TEST_CASE("fs_file operations", "[chaiscript-filesystem]") {
     cfs::fs_module fs(chai);
 
     fs::path tmpdir = fs::current_path();
-    tmpdir / "/tmp";
+    tmpdir = tmpdir / "/tmp";
     fs.sandbox().add_path(tmpdir);
 
     SECTION("Test open file - not present") {

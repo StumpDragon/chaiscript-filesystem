@@ -1,6 +1,9 @@
 #include <string>
 #include <chaiscript/filesystem.hpp> 
-#include <catch.hpp> 
+
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
 
 using std::string;
 namespace cfs = chaiscript::filesystem;
