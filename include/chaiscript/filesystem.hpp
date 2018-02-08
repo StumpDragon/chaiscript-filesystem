@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <regex>
@@ -126,6 +127,12 @@ public:
     }
     bool eof() {
         return true;
+    }
+    bool seek(uint64_t bytes, bool relative) { 
+        return(false);
+    }
+    uint64_t tell() {
+        return(-1L);
     }
 };
 

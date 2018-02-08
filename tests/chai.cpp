@@ -85,4 +85,16 @@ TEST_CASE( "Testing string method", "[eval-tests]" ) {
 }
 
 
+TEST_CASE( "Testing multiline string method", "[eval-tests]" ) { 
+	ChaiEngine chai; 
+
+	std::string script(R"(
+		        var t = Test(); 
+		        t.returnString("asdf");
+		        )"
+		        );
+	std::cout << "Script: '" << script << "'" << std::endl;
+	std::string r = chai.eval<std::string>(script);
+	REQUIRE(r.length() == 4 );
+}
 
