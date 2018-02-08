@@ -14,16 +14,18 @@ public:
     }
     bool open() {
     	file_.open(path_.string(), ios::in|ios::out|ios::binary);
+    	std::cout << "stream: " << file_.good() << " f: " << file_.fail() << " b: " << file_.bad() << std::endl;
     	return file_.is_open();
     }
     bool is_valid() { 
-        std::cout << "fs_file::is_valid p:  " << path_.string() << std::endl;
-        return file_.is_open();
+    	bool retVal = file_.is_open();
+        std::cout << "fs_file::is_valid p:  " << path_.string() << " RC: " << retVal << std::endl;
+        return retVal;
     }
     string readline() { 
         return "";
     }
-    void eachline(const std::function<std::string (const std::string &)> &t_func) { 
+    void eachline(const std::function<void (const std::string &)> &t_func) { 
         return;
     }
     long writeline(const string& s) {

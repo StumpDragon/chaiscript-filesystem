@@ -16,7 +16,7 @@ public:
                 fsName["is_directory"] = var(fun([&,fs](const string& s) { return fs.is_directory(s); }));
                 fsName["create_directories"] = var(fun([fs](const string& s) { return fs.create_directories(s); }));
                 fsName["open"]         = var(fun([fs](const string& s) { return fs.open(s); }));
-                fsName["create"]         = var(fun([fs](const string& s) { return fs.open(s); }));
+                fsName["create"]         = var(fun([fs](const string& s) { return fs.create(s); }));
             },
             "chaifs");
 
@@ -76,7 +76,7 @@ public:
         fs_file f(paths);
         fs::path p(paths);
         if ( ! sandbox_.isAllowed(p) ) return f;
-        //std::cout << "fs_file : single arg func " << std::endl;
+        std::cout << "fs_file : single arg func " << std::endl;
 
         return f;
     }
@@ -84,7 +84,7 @@ public:
         fs_file f(paths);
         fs::path p(paths);
         if ( ! sandbox_.isAllowed(p) ) return f;
-        //std::cout << "fs_file : create "  << std::endl;
+        std::cout << "fs_file : create "  << std::endl;
         f.open();
 
         return f;

@@ -18,6 +18,7 @@ public:
          */
         auto cp = fs::canonical(p, ec); 
         if ( ENOENT != ec.value()) { 
+        	std::cout << "Adding sandbox path: " << cp << std::endl;
             sandbox_paths.push_back(cp);
         }
         return ec;
