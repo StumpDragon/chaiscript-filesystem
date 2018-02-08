@@ -8,7 +8,7 @@ One of the key features of this project is sandboxing.  The module allows you to
 ### Requirements: 
 --------------
 * ChaiScript - currently only the develop stream
-* Boost Filesystem - 
+* Boost Filesystem - Tested with 1.64.0, but anything greater than 1.50 (Filesystem v3) should work
 
 ### Using: 
 --------------
