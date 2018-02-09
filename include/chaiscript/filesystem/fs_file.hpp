@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <regex>
 
 using std::fstream;
 using std::ios; 
@@ -12,9 +13,15 @@ class fs_file {
 public:
     fs_file(const string& path) : path_(path) {
     }
-    bool open() {
-    	file_.open(path_.string(), ios::in|ios::out|ios::binary);
-    	std::cout << "stream: " << file_.good() << " f: " << file_.fail() << " b: " << file_.bad() << std::endl;
+    bool open(bool create) {
+        auto p= path_.string();
+        #ifdef __CYGWIN__ 
+            auto m = create ? ios::out : ios::in|ios::out;
+            file_.open(p, m|ios::binary);
+        #else
+            file_.open(path_.string(), ios::in|ios::out|ios::binary);
+        #endif
+    	std::cout << "opening file: " << path_.string() << " stream: " << file_.good() << " f: " << file_.fail() << " b: " << file_.bad() << std::endl;
     	return file_.is_open();
     }
     bool is_valid() { 
@@ -29,6 +36,7 @@ public:
         return;
     }
     long writeline(const string& s) {
+        file_ << s << std::endl;
         return(0L);
     }
     bool eof() {

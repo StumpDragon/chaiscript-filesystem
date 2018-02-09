@@ -29,7 +29,8 @@ public:
                 { chaiscript::fun(&fs_file::is_valid), "is_valid" },
                 { chaiscript::fun(&fs_file::eof), "eof" },
                 { chaiscript::fun(&fs_file::readline), "readline" }, 
-                { chaiscript::fun(&fs_file::eachline), "eachline" }
+                { chaiscript::fun(&fs_file::writeline), "writeline" },
+                { chaiscript::fun(&fs_file::eachline), "eachline" },
 
             });
         chai_.add( module_ );
@@ -77,6 +78,7 @@ public:
         fs::path p(paths);
         if ( ! sandbox_.isAllowed(p) ) return f;
         std::cout << "fs_file : single arg func " << std::endl;
+        f.open(false);
 
         return f;
     }
@@ -85,7 +87,7 @@ public:
         fs::path p(paths);
         if ( ! sandbox_.isAllowed(p) ) return f;
         std::cout << "fs_file : create "  << std::endl;
-        f.open();
+        f.open(true);
 
         return f;
     }

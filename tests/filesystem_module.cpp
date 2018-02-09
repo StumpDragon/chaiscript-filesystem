@@ -11,6 +11,7 @@ namespace cfs = chaiscript::filesystem;
 namespace fs  = boost::filesystem;
 
 #include <iostream>
+#include <fstream>
 
 string normalize(const string& p) { 
     string s = p; 
@@ -93,20 +94,32 @@ TEST_CASE("fs_file operations", "[chaiscript-filesystem]") {
     }
     SECTION("Test open file - create" ) { 
         fs::path p = tmpdir / "test-create.txt";
-        std::string script = R"(import("chaifs"); var f = chaifs.create("$PATH"); f.is_valid();)"; 
+        std::string script = R"(
+                    import("chaifs"); 
+                    var f = chaifs.create("$PATH"); 
+                    f.writeline("This is a line to send to a file");
+                    f.is_valid();
+                )"; 
         script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
         bool b = chai.eval<bool>(script);
         REQUIRE(true == b);
     }
-}
 
-/*TEST_CASE("Get current path", "[chaiscript-filesystem]") { 
-    chaiscript::ChaiScript chai; 
-    auto fs_module = chaiscript::ModulePtr(new cfs::fs_module());
-    chai.add(fs_module);
-
-    std::string cwd = fs::current_path().string();
-    std::string s = chai.eval<std::string>(R"(var fs = chai_fs(); return fs.current_path();)");
-    REQUIRE( s.length() > 0 );
+    /* Debugging for strange fstream   ios::in|ios::out behavior
+    SECTION("Test open file - fstream") {
+        fs::path p = tmpdir / "test-fstream.txt";
+        std::string s = normalize(p.string());
+        s = std::regex_replace(s, std::regex("[A-Z]\\:"), "");
+        std::cout << "fstream path: " << s << std::endl;
+        std::fstream f; 
+        f.open(s, std::ios::in|std::ios::out|std::ios::binary);
+        f << "Test" << std::endl;
+        std::ofstream f1;
+        f1.open("c:\\temp\\asdf.txt", std::ios::binary);
+        f1 << "Test text" << std::endl;
+        std::fstream f2("c:/temp/asdfasdf2.txt", std::ios::out|std::ios::binary);
+        //f2.open("c:\\temp\\asdf2.txt", std::fstream::in|std::fstream::out|std::fstream::binary);
+        f2 << "Test text" << std::endl;
+    }
+    */
 }
-*/
