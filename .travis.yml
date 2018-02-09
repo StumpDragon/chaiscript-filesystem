@@ -69,8 +69,8 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-          #packages:
-          #  - g++-7
+          packages:
+            - g++-5
       env:
           - TOOLCHAIN=clang-5-cxx14
 
