@@ -1,5 +1,7 @@
 Master Status: [![Linux Build Status](https://travis-ci.org/StumpDragon/chaiscript-filesystem.png?branch=master)](https://travis-ci.org/StumpDragon/chaiscript-filesystem) 
 
+Develop Status: [![Linux Build Status](https://travis-ci.org/StumpDragon/chaiscript-filesystem.png?branch=develop)](https://travis-ci.org/StumpDragon/chaiscript-filesystem) 
+
 # chaiscript-filesystem
 -----------------------
 
