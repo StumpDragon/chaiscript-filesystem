@@ -50,13 +50,17 @@ if(CMAKE_COMPILER_IS_GNUXX)
     ADD_DEFINITIONS(-lstdc++fs)
 endif()
 
+if(CMAKE_HOST_UNIX)
+   set(EXTRA_LIBS -ldl -lpthread)
+endif()
+
 #ADD_DEFINITIONS(-std=c++14)
 ADD_EXECUTABLE(chai tests/chai.cpp) 
 ADD_EXECUTABLE(chai-sbox tests/filesystem_sandbox.cpp) 
 ADD_EXECUTABLE(chai-module tests/filesystem_module.cpp) 
-target_link_libraries(chai Catch::Catch Boost::system Boost::filesystem)
-target_link_libraries(chai-sbox Catch::Catch Boost::system Boost::filesystem)
-target_link_libraries(chai-module Catch::Catch Boost::system Boost::filesystem)
+target_link_libraries(chai Catch::Catch Boost::system Boost::filesystem ${EXTRA_LIBS})
+target_link_libraries(chai-sbox Catch::Catch Boost::system Boost::filesystem ${EXTRA_LIBS})
+target_link_libraries(chai-module Catch::Catch Boost::system Boost::filesystem ${EXTRA_LIBS})
 
 
 enable_testing()
