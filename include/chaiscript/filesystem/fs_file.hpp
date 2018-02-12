@@ -5,6 +5,7 @@
 
 using std::fstream;
 using std::ios; 
+using std::string;
 
 class fs_file { 
     fs::path path_; 
@@ -30,17 +31,29 @@ public:
         return retVal;
     }
     string readline() { 
+        string s; 
+        std::getline(file_, s);
+        if ( s.length() > 0 ) return s;
         return "";
     }
     void eachline(const std::function<void (const std::string &)> &t_func) { 
+        while ( !file_.eof()) {
+            string s; 
+            std::getline(file_, s);
+            std::cout << "Reading line: "  << s << std::endl;
+            std::cout << "Reading line length: "  << s.length() << std::endl;
+            if ( s.length() > 0 )  t_func(s);
+        }
         return;
     }
     long writeline(const string& s) {
+        long v = s.length() + 1; 
         file_ << s << std::endl;
-        return(0L);
+        return(v);
     }
     bool eof() {
-        return true;
+        if ( !file_.is_open() ) return false;
+        return file_.eof();
     }
     bool seek(uint64_t bytes, bool relative) { 
         return(false);
