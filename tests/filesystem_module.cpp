@@ -107,6 +107,32 @@ TEST_CASE("fs_file operations", "[chaiscript-filesystem]") {
 
 }
 
+TEST_CASE("Testing file size", "[chaiscript-filesystem]") {
+    chaiscript::ChaiScript chai; 
+    cfs::fs_module fs(chai);
+
+    fs::path tmpdir = fs::current_path();
+    tmpdir = tmpdir / "/tmp";
+    fs.sandbox().add_path(tmpdir);
+    fs::path p = tmpdir / "test-filesize.txt";
+
+    SECTION("file size") { 
+        string script = R"(
+                import("chaifs"); 
+                var f = chaifs.create("$PATH"); 
+                f.writeline("hello world");
+                f.close();
+                var l = fs.file_size("$PATH");
+                return l;
+           )";
+        script = std::regex_replace(script, std::regex(R"(\$PATH)"), normalize(p.string()) );  
+        std::cout << "SCript: " << script << std::endl;
+        long val = chai.eval<long>(script);
+        REQUIRE(val == 12);
+    }
+
+}
+
 TEST_CASE("Testing writeline/eachline", "[chaiscript-filesystem]") {
     chaiscript::ChaiScript chai; 
     cfs::fs_module fs(chai);

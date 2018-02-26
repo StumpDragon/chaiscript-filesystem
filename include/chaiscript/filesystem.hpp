@@ -43,6 +43,7 @@ public:
 */
 
 /* Do not change order of includes without due care */
+#include <chaiscript/filesystem/fs_directory.hpp> 
 #include <chaiscript/filesystem/fs_file.hpp> 
 #include <chaiscript/filesystem/fs_sandbox.hpp> 
 #include <chaiscript/filesystem/fs_module.hpp> 

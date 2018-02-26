@@ -2,6 +2,7 @@
 
 class fs_sandbox { 
 	vector<fs::path> sandbox_paths; 
+    fs::path         sandbox_tmpdir;
 
 public:
 	fs_sandbox() { }
@@ -11,6 +12,16 @@ public:
         }*/
         sandbox_paths.push_back( fs::path(p) );
     }
+    bool setTempDir(const fs::path& p) { 
+        error_code ec;
+        auto cp = fs::canonical(p, ec); 
+        if ( ENOENT != ec.value()) { 
+            sandbox_tmpdir = p;
+            return true;
+        }
+        return false;
+    }
+    fs::path getTempDir() const { return sandbox_tmpdir; }
 	error_code add_path(const fs::path& p) {
         error_code ec;
         /* use canonical here vs lexically_normal, we want to store the canonical path,

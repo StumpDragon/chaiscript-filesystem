@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <regex>
+#include <memory>
+#include <vector>
 
 using std::fstream;
 using std::ios; 
@@ -25,16 +27,30 @@ public:
     	std::cout << "opening file: " << path_.string() << " stream: " << file_.good() << " f: " << file_.fail() << " b: " << file_.bad() << std::endl;
     	return file_.is_open();
     }
+    void close() {
+        if ( is_valid() ) file_.close();
+    }
     bool is_valid() { 
     	bool retVal = file_.is_open();
         std::cout << "fs_file::is_valid p:  " << path_.string() << " RC: " << retVal << std::endl;
         return retVal;
     }
-    string readline() { 
-        string s; 
-        std::getline(file_, s);
-        if ( s.length() > 0 ) return s;
-        return "";
+    bool eof() {
+        if ( !file_.is_open() ) return false;
+        return file_.eof();
+    }
+    long size() { 
+        if ( !file_.is_open() ) return -1L;
+        return( fs::file_size( path_ ) );
+    }
+    void seek(uint64_t bytes, bool relative) { 
+        file_.seekg(bytes); 
+    }
+    uint64_t tell() {
+        return(file_.tellg());
+    }
+    int peek() { 
+        return file_.peek();
     }
     void eachline(const std::function<void (const std::string &)> &t_func) { 
         while ( !file_.eof()) {
@@ -46,19 +62,48 @@ public:
         }
         return;
     }
-    long writeline(const string& s) {
+    void each_byte(const std::function<void (const char x)> &t_func) { 
+        while ( !file_.eof()) {
+            // read byte from file 
+            // call closure
+        }        
+    }
+    string readline() { 
+        string s; 
+        std::getline(file_, s);
+        if ( s.length() > 0 ) return s;
+        return "";
+    }
+    string read(int bytes) { 
+        std::vector<char> buffer; 
+        buffer.resize(bytes);
+        file_.read(&buffer[0], bytes);
+        return string(  " " );
+    }
+
+    /* WRITING TO THE FILE */
+    fs_file& append(const string& s) {
+        return (*this);
+    }
+    fs_file& append(const char ch) { 
+        return (*this);
+    }
+    fs_file& put(char ch) { 
+        file_.put(ch);
+        return (*this);
+    }
+    fs_file& write(const string& s) { 
+        file_.write(s.c_str(), s.length());
+        return (*this);  
+    }
+    fs_file& write(const char* s, long n) { 
+        file_.write(s, n);
+        return (*this);
+    }
+    int writeline(const string& s) {
         long v = s.length() + 1; 
         file_ << s << std::endl;
         return(v);
     }
-    bool eof() {
-        if ( !file_.is_open() ) return false;
-        return file_.eof();
-    }
-    bool seek(uint64_t bytes, bool relative) { 
-        return(false);
-    }
-    uint64_t tell() {
-        return(-1L);
-    }
+
 };
